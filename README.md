@@ -135,11 +135,11 @@ If a contact writes again within 2 hours and has no pending or open ticket, the 
 
 ## Requirements
 
-- **Node.js 14+** (CI builds on Node 14)
+- **Node.js 20+** for local development and CI.
 - **MySQL 5.7+ or MariaDB 10.6+**
-- **Docker** (optional, but the fastest way to get a database up)
-- **Redis** (optional, used to persist WhatsApp session keys)
-- A Linux server if you are deploying to production. Ubuntu 20.04+ is what these
+- **Docker Compose v2** for the supported deployment topology.
+- **Redis 7+** with a persistent volume for session/key durability.
+- A Linux server if you are deploying to production. Ubuntu 22.04+ is what these
   instructions assume.
 
 > [!WARNING]
@@ -151,47 +151,43 @@ If a contact writes again within 2 hours and has no pending or open ticket, the 
 ## Quick start with Docker
 
 ```bash
-git clone https://github.com/canove/whaticket.git
-cd whaticket
+git clone https://github.com/Ryuzu/whaticket-community.git
+cd whaticket-community
 cp .env.example .env
 ```
 
-Edit `.env`. At minimum, set `MYSQL_ROOT_PASSWORD`, `JWT_SECRET` and `JWT_REFRESH_SECRET`:
+Edit `.env`. Set the database credentials, public URLs, `JWT_SECRET`,
+`JWT_REFRESH_SECRET` and `WHATSAPP_PROVIDER`:
 
 ```bash
-# MYSQL
-MYSQL_ENGINE=mariadb
-MYSQL_VERSION=10.6
-MYSQL_ROOT_PASSWORD=change-me
+MYSQL_VERSION=10.6.22
 MYSQL_DATABASE=whaticket
-MYSQL_PORT=3306
-TZ=America/Fortaleza
+MYSQL_ROOT_PASSWORD=replace-me
+DB_USER=whaticket
+DB_PASSWORD=replace-me
+TZ=UTC
 
-# BACKEND
-BACKEND_PORT=8080
-BACKEND_SERVER_NAME=api.mydomain.com
 BACKEND_URL=https://api.mydomain.com
-PROXY_PORT=443
-JWT_SECRET=change-me
-JWT_REFRESH_SECRET=change-me-too
-
-# FRONTEND
-FRONTEND_PORT=80
-FRONTEND_SSL_PORT=443
-FRONTEND_SERVER_NAME=myapp.mydomain.com
 FRONTEND_URL=https://myapp.mydomain.com
+PROXY_PORT=443
+JWT_SECRET=replace-me
+JWT_REFRESH_SECRET=replace-me-too
+WHATSAPP_PROVIDER=wwebjs
+REDIS_VERSION=7.4.2-alpine
+REDIS_DB=0
 ```
 
-Bring everything up:
+Validate and start the supported Compose file:
 
 ```bash
-docker-compose up -d --build
+docker compose config --quiet
+docker compose up -d --build
 ```
 
 On the **first run only**, seed the database:
 
 ```bash
-docker-compose exec backend npx sequelize db:seed:all
+docker compose exec backend npx sequelize db:seed:all
 ```
 
 Open the frontend, log in with the seeded account, go to **Connections**, create your first
@@ -199,6 +195,9 @@ WhatsApp connection and scan the QR code. Every message that number receives now
 the ticket list.
 
 **Default credentials:** `admin@whaticket.com` / `admin`. Change them immediately.
+
+Dokploy-specific instructions, volume requirements and the restart verification are in
+[`docs/deployment-dokploy.md`](docs/deployment-dokploy.md).
 
 <details>
 <summary><b>Optional Docker services</b></summary>
@@ -275,8 +274,8 @@ sudo apt-get install -y libxshmfence-dev libgbm-dev wget unzip fontconfig locale
 
 ```bash
 cd backend
-cp .env.example .env   # then fill it in, see Configuration below
-npm install
+cp .env.example .env   # then fill it in
+npm ci
 npm run build
 npx sequelize db:migrate
 npx sequelize db:seed:all
@@ -288,14 +287,14 @@ npm run dev            # or: npm start
 ```bash
 cd frontend
 cp .env.example .env
-npm install
+npm ci
 npm run dev
 ```
 
 `frontend/.env` only needs to point at the backend:
 
 ```bash
-VITE_BACKEND_URL = http://localhost:8080/
+VITE_BACKEND_URL=http://localhost:8080/
 ```
 
 **5.** Open <http://localhost:3000/signup>, create a user, then go to **Connections** and

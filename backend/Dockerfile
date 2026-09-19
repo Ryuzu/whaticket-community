@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim
+FROM node:22.14.0-bookworm-slim
 
 ENV PUPPETEER_SKIP_DOWNLOAD=1 \
     CHROME_BIN=/usr/bin/chromium
@@ -13,11 +13,11 @@ RUN apt-get update \
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 
 COPY . .
-RUN npm run build
+RUN npm run build && npm prune --omit=dev
 
 ENV NODE_ENV=production \
     PORT=3000

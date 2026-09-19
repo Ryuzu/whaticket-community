@@ -1,7 +1,7 @@
-FROM node:14-alpine as build-deps
+FROM node:22.14.0-alpine as build-deps
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY .env* ./
 COPY src/ ./src/
 COPY public/ ./public/
@@ -9,7 +9,7 @@ COPY index.html ./
 COPY vite.config.js ./
 RUN npm run build
 
-FROM nginx:alpine
+FROM nginx:1.27.4-alpine
 RUN apk add --no-cache jq openssl
 
 ENV DOCKERIZE_VERSION v0.6.1
