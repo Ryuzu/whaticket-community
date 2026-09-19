@@ -311,6 +311,19 @@ const removeSession = (whatsappId: number): void => {
     logger.error(err);
   }
 };
+const shutdown = async (): Promise<void> => {
+  const activeSessions = [...sessions];
+  await Promise.all(
+    activeSessions.map(async session => {
+      try {
+        await session.destroy();
+      } catch (err) {
+        logger.warn({ info: "Error closing WhatsApp Web session", err });
+      }
+    })
+  );
+  sessions.splice(0, sessions.length);
+};
 
 const sendMessage = async (
   sessionId: number,
@@ -622,6 +635,7 @@ const init = async (whatsapp: Whatsapp): Promise<void> => {
 export const WhatsappWebJsProvider: WhatsappProvider = {
   init,
   removeSession,
+  shutdown,
   logout,
   sendMessage,
   sendMedia,

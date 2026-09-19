@@ -93,3 +93,10 @@ export const deleteFromRedis = async (key: string) => {
 };
 
 export const getRedisClient = () => redisClient;
+export const closeRedis = async (): Promise<void> => {
+  if (!redisClient) return;
+
+  redisClient.disconnect();
+  redisClient = null;
+  logger.info("Redis session store closed");
+};

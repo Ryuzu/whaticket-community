@@ -11,7 +11,8 @@ import { WhaileysProvider } from "./Implementations/whaileys";
 
 export interface WhatsappProvider {
   init(whatsapp: Whatsapp): Promise<void>;
-  removeSession(whatsappId: number): void;
+  removeSession(whatsappId: number): void | Promise<void>;
+  shutdown(): Promise<void>;
   logout(sessionId: number): Promise<void>;
   sendMessage(
     sessionId: number,
@@ -42,13 +43,19 @@ export interface WhatsappProvider {
   ): Promise<ProviderMessage[]>;
 }
 
-const provider = process.env.WHATSAPP_PROVIDER || "wwebjs";
+const providerName = process.env.WHATSAPP_PROVIDER || "wwebjs";
 
 const providersMap: Record<string, WhatsappProvider> = {
   wwebjs: WhatsappWebJsProvider,
   whaileys: WhaileysProvider
 };
 
-const whatsappProvider = providersMap[provider];
+const whatsappProvider = providersMap[providerName];
+
+if (!whatsappProvider) {
+  throw new Error(
+    `Unsupported WHATSAPP_PROVIDER "${providerName}". Use "wwebjs" or "whaileys".`
+  );
+}
 
 export { whatsappProvider };

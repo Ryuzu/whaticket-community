@@ -13,6 +13,9 @@ import quickAnswerRoutes from "./quickAnswerRoutes";
 import apiRoutes from "./apiRoutes";
 
 const routes = Router();
+routes.get("/healthz", (_req, res) => {
+  return res.status(200).json({ status: "ok" });
+});
 
 routes.use(userRoutes);
 routes.use("/auth", authRoutes);

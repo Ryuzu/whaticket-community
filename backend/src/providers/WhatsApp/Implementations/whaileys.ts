@@ -872,6 +872,11 @@ const removeSession = async (whatsappId: number): Promise<void> => {
   sessions.delete(whatsappId);
   stores.delete(whatsappId);
 };
+const shutdown = async (): Promise<void> => {
+  await Promise.all(
+    Array.from(sessions.keys()).map(sessionId => removeSession(sessionId))
+  );
+};
 
 const init = async (whatsapp: Whatsapp): Promise<void> => {
   const sessionId = whatsapp.id;
@@ -1522,6 +1527,7 @@ const fetchChatMessages = async (
 export const WhaileysProvider: WhatsappProvider = {
   init,
   removeSession,
+  shutdown,
   logout,
   sendMessage,
   sendMedia,
