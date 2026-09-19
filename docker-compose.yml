@@ -80,7 +80,6 @@ services:
     entrypoint: ["/bin/sh", "-ec"]
     command: |
       dockerize -template /etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
-      printf '\nlisten 80;\n' >> /etc/nginx/sites.d/frontend.conf
       env_json=$$(jq -cn --arg backend "$$VITE_BACKEND_URL" '{"VITE_BACKEND_URL": $$backend}')
       escaped=$$(printf '%s' "$$env_json" | sed 's/[#&]/\\&/g')
       sed -i "s#<noscript id=\"env-insertion-point\"></noscript>#<script>var ENV=$$escaped</script>#" /var/www/public/index.html
