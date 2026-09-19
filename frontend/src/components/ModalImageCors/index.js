@@ -1,50 +1,75 @@
 import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import ModalImage from "react-modal-image";
 import api from "../../services/api";
 
-const useStyles = makeStyles(theme => ({
-	messageMedia: {
-		objectFit: "cover",
-		width: 250,
-		height: 200,
-		borderTopLeftRadius: 8,
-		borderTopRightRadius: 8,
-		borderBottomLeftRadius: 8,
-		borderBottomRightRadius: 8,
-	},
+const useStyles = makeStyles(() => ({
+  messageMedia: {
+    cursor: "pointer",
+    objectFit: "cover",
+    width: 250,
+    height: 200,
+    borderRadius: 8
+  },
+  expandedMedia: {
+    display: "block",
+    maxWidth: "100%",
+    maxHeight: "80vh",
+    margin: "auto"
+  }
 }));
 
 const ModalImageCors = ({ imageUrl }) => {
-	const classes = useStyles();
-	const [fetching, setFetching] = useState(true);
-	const [blobUrl, setBlobUrl] = useState("");
+  const classes = useStyles();
+  const [blobUrl, setBlobUrl] = useState("");
+  const [open, setOpen] = useState(false);
 
-	useEffect(() => {
-		if (!imageUrl) return;
-		const fetchImage = async () => {
-			const { data, headers } = await api.get(imageUrl, {
-				responseType: "blob",
-			});
-			const url = window.URL.createObjectURL(
-				new Blob([data], { type: headers["content-type"] })
-			);
-			setBlobUrl(url);
-			setFetching(false);
-		};
-		fetchImage();
-	}, [imageUrl]);
+  useEffect(() => {
+    if (!imageUrl) return undefined;
 
-	return (
-		<ModalImage
-			className={classes.messageMedia}
-			smallSrcSet={fetching ? imageUrl : blobUrl}
-			medium={fetching ? imageUrl : blobUrl}
-			large={fetching ? imageUrl : blobUrl}
-			alt="image"
-		/>
-	);
+    let active = true;
+    let objectUrl;
+
+    const fetchImage = async () => {
+      try {
+        const { data, headers } = await api.get(imageUrl, {
+          responseType: "blob"
+        });
+        objectUrl = window.URL.createObjectURL(
+          new Blob([data], { type: headers["content-type"] })
+        );
+        if (active) setBlobUrl(objectUrl);
+      } catch {
+        if (active) setBlobUrl("");
+      }
+    };
+
+    fetchImage();
+
+    return () => {
+      active = false;
+      if (objectUrl) window.URL.revokeObjectURL(objectUrl);
+    };
+  }, [imageUrl]);
+
+  const source = blobUrl || imageUrl;
+
+  return (
+    <>
+      <img
+        className={classes.messageMedia}
+        src={source}
+        alt="message attachment"
+        onClick={() => setOpen(true)}
+      />
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md">
+        <DialogContent>
+          <img className={classes.expandedMedia} src={source} alt="message attachment" />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 };
 
 export default ModalImageCors;

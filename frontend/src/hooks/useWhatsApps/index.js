@@ -13,45 +13,31 @@ const reducer = (state, action) => {
 
 	if (action.type === "UPDATE_WHATSAPPS") {
 		const whatsApp = action.payload;
-		const whatsAppIndex = state.findIndex(s => s.id === whatsApp.id);
 
-		if (whatsAppIndex !== -1) {
-			state[whatsAppIndex] = whatsApp;
-			return [...state];
-		} else {
-			return [whatsApp, ...state];
-		}
+		return state.some(item => item.id === whatsApp.id)
+			? state.map(item => (item.id === whatsApp.id ? whatsApp : item))
+			: [whatsApp, ...state];
 	}
 
 	if (action.type === "UPDATE_SESSION") {
 		const whatsApp = action.payload;
-		const whatsAppIndex = state.findIndex(s => s.id === whatsApp.id);
 
-		if (whatsAppIndex !== -1) {
-			state[whatsAppIndex].status = whatsApp.status;
-			state[whatsAppIndex].updatedAt = whatsApp.updatedAt;
-			state[whatsAppIndex].qrcode = whatsApp.qrcode;
-			state[whatsAppIndex].retries = whatsApp.retries;
-			return [...state];
-		} else {
-			return [...state];
-		}
+		return state.map(item =>
+			item.id === whatsApp.id ? { ...item, ...whatsApp } : item
+		);
 	}
 
 	if (action.type === "DELETE_WHATSAPPS") {
-		const whatsAppId = action.payload;
-
-		const whatsAppIndex = state.findIndex(s => s.id === whatsAppId);
-		if (whatsAppIndex !== -1) {
-			state.splice(whatsAppIndex, 1);
-		}
-		return [...state];
+		return state.filter(item => item.id !== action.payload);
 	}
 
 	if (action.type === "RESET") {
 		return [];
 	}
+
+	return state;
 };
+
 
 const useWhatsApps = () => {
 	const [whatsApps, dispatch] = useReducer(reducer, []);
@@ -79,9 +65,6 @@ const useWhatsApps = () => {
 			if (data.action === "update") {
 				dispatch({ type: "UPDATE_WHATSAPPS", payload: data.whatsapp });
 			}
-		});
-
-		socket.on("whatsapp", data => {
 			if (data.action === "delete") {
 				dispatch({ type: "DELETE_WHATSAPPS", payload: data.whatsappId });
 			}
