@@ -6,8 +6,8 @@ services:
     environment:
       MARIADB_DATABASE: whaticket
       MARIADB_USER: whaticket
-      MARIADB_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Falta MYSQL_ROOT_PASSWORD}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?MISSING DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MISSING MYSQL_ROOT_PASSWORD}
       TZ: America/Lima
     volumes:
       - mysql_data:/var/lib/mysql
@@ -45,16 +45,16 @@ services:
       DB_DIALECT: mysql
       DB_NAME: whaticket
       DB_USER: whaticket
-      DB_PASS: ${DB_PASSWORD:?Falta DB_PASSWORD}
+      DB_PASS: ${DB_PASSWORD:?MISSING DB_PASSWORD}
       REDIS_URL: redis://redis:6379
       REDIS_DB: "0"
       WHATSAPP_PROVIDER: ${WHATSAPP_PROVIDER:-wwebjs}
       CHROME_ARGS: "--no-sandbox --disable-setuid-sandbox"
-      BACKEND_URL: ${BACKEND_URL:?Falta BACKEND_URL}
-      FRONTEND_URL: ${FRONTEND_URL:?Falta FRONTEND_URL}
+      BACKEND_URL: ${BACKEND_URL:?MISSING BACKEND_URL}
+      FRONTEND_URL: ${FRONTEND_URL:?MISSING FRONTEND_URL}
       PROXY_PORT: "443"
-      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Falta JWT_REFRESH_SECRET}
+      JWT_SECRET: ${JWT_SECRET:?MISSING JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?MISSING JWT_REFRESH_SECRET}
       TZ: America/Lima
     volumes:
       - backend_public:/usr/src/app/public
@@ -74,7 +74,7 @@ services:
       context: ./frontend
     restart: unless-stopped
     environment:
-      VITE_BACKEND_URL: ${BACKEND_URL:?Falta BACKEND_URL}
+      VITE_BACKEND_URL: ${BACKEND_URL:?MISSING BACKEND_URL}
       URL_BACKEND: backend:3000
     entrypoint: ["/bin/sh", "-ec"]
     command: |
