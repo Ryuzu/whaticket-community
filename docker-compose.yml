@@ -34,6 +34,7 @@ services:
       - whaticket
 
   backend:
+    container_name: whaticket_backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -71,6 +72,7 @@ services:
       - whaticket
 
   frontend:
+    container_name: whaticket_frontend
     build:
       context: ./frontend
     restart: unless-stopped
