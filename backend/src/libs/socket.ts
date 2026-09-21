@@ -15,15 +15,19 @@ export const initIO = (httpServer: Server): SocketIO => {
   });
 
   io.on("connection", socket => {
-    const { token } = socket.handshake.query;
+    const token =
+      socket.handshake.auth?.token || socket.handshake.query.token;
     let tokenData = null;
     try {
+      if (typeof token !== "string" || !token) {
+        throw new Error("Missing socket authentication token");
+      }
       tokenData = verify(token, authConfig.secret);
       logger.debug(JSON.stringify(tokenData), "io-onConnection: tokenData");
     } catch (error) {
       logger.error(JSON.stringify(error), "Error decoding token");
-      socket.disconnect();
-      return io;
+      socket.disconnect(true);
+      return;
     }
 
     logger.info("Client Connected");

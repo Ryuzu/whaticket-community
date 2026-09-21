@@ -3,12 +3,17 @@ import { getBackendUrl } from "../config";
 
 function connectToSocket() {
   const token = localStorage.getItem("token");
+  const parsedToken = token ? JSON.parse(token) : "";
 
   return openSocket(getBackendUrl(), {
     transports: ["websocket", "polling"],
-    query: {
-      token: token ? JSON.parse(token) : "",
+    auth: {
+      token: parsedToken,
     },
+    autoConnect: Boolean(parsedToken),
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
   });
 }
 
