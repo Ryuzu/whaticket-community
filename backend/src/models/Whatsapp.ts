@@ -18,7 +18,7 @@ import Ticket from "./Ticket";
 import WhatsappQueue from "./WhatsappQueue";
 
 @Table
-class Whatsapp extends Model<Whatsapp> {
+class Whatsapp extends Model<Whatsapp, Partial<Whatsapp>> {
   @PrimaryKey
   @AutoIncrement
   @Column

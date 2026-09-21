@@ -22,7 +22,7 @@ import UserQueue from "./UserQueue";
 import Whatsapp from "./Whatsapp";
 
 @Table
-class User extends Model<User> {
+class User extends Model<User, Partial<User>> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -50,7 +50,7 @@ class User extends Model<User> {
 
   @ForeignKey(() => Whatsapp)
   @Column
-  whatsappId: number;
+  whatsappId: number | null;
 
   @BelongsTo(() => Whatsapp)
   whatsapp: Whatsapp;

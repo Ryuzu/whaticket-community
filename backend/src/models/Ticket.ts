@@ -19,7 +19,7 @@ import User from "./User";
 import Whatsapp from "./Whatsapp";
 
 @Table
-class Ticket extends Model<Ticket> {
+class Ticket extends Model<Ticket, Partial<Ticket>> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -46,7 +46,7 @@ class Ticket extends Model<Ticket> {
 
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number | null;
 
   @BelongsTo(() => User)
   user: User;
@@ -67,7 +67,7 @@ class Ticket extends Model<Ticket> {
 
   @ForeignKey(() => Queue)
   @Column
-  queueId: number;
+  queueId: number | null;
 
   @BelongsTo(() => Queue)
   queue: Queue;

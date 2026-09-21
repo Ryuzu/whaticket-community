@@ -13,7 +13,7 @@ import {
 import Whatsapp from "./Whatsapp";
 
 @Table
-class WppKey extends Model<WppKey> {
+class WppKey extends Model<WppKey, Partial<WppKey>> {
   @PrimaryKey
   @AutoIncrement
   @Column

@@ -10,7 +10,7 @@ import {
 } from "sequelize-typescript";
 
 @Table
-class QuickAnswer extends Model<QuickAnswer> {
+class QuickAnswer extends Model<QuickAnswer, Partial<QuickAnswer>> {
   @PrimaryKey
   @AutoIncrement
   @Column
