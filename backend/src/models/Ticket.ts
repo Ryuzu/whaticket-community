@@ -9,7 +9,8 @@ import {
   BelongsTo,
   HasMany,
   AutoIncrement,
-  Default
+  Default,
+  DataType
 } from "sequelize-typescript";
 
 import Contact from "./Contact";
@@ -45,7 +46,7 @@ class Ticket extends Model<Ticket, Partial<Ticket>> {
   updatedAt: Date;
 
   @ForeignKey(() => User)
-  @Column
+  @Column(DataType.INTEGER)
   userId: number | null;
 
   @BelongsTo(() => User)
@@ -66,7 +67,7 @@ class Ticket extends Model<Ticket, Partial<Ticket>> {
   whatsapp: Whatsapp;
 
   @ForeignKey(() => Queue)
-  @Column
+  @Column(DataType.INTEGER)
   queueId: number | null;
 
   @BelongsTo(() => Queue)

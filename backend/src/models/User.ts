@@ -49,7 +49,7 @@ class User extends Model<User, Partial<User>> {
   profile: string;
 
   @ForeignKey(() => Whatsapp)
-  @Column
+  @Column(DataType.INTEGER)
   whatsappId: number | null;
 
   @BelongsTo(() => Whatsapp)
